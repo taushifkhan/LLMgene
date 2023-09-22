@@ -14,8 +14,8 @@ st.markdown("""
 """)
 
 
-bloodGen3 = pd.read_csv("./data_repo/geneList/ModuleTranscript_BioINfo.csv")
-param_theme={'erythropoiesis':'./data_Repo/paramFiles/erythropoiesis_param.json'}
+bloodGen3 = pd.read_csv("data_repo/geneList/ModuleTranscript_BioINfo.csv")
+param_theme={'erythropoiesis':'data_Repo/paramFiles/erythropoiesis_param.json'}
 
 module_selection, paramFile_selection = st.columns(2)
 
