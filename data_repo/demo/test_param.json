@@ -1,0 +1,1 @@
+{"background": ["gene name", " brief summary"], "scoring_strategy": "provide score 0 to 10 on following statements with 0 being low evidence and 10 being high evidence", "question": ["this is a cell receptor", "this is related to immune response", "this gene is related to influenza infection", "this is a cell adhesive gene"]}

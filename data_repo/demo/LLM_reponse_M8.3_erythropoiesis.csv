@@ -1,0 +1,4 @@
+,geneSymbol,model,Official_Name,Brief_Summary,The_gene_is_associated_with_erythroid_cells_or_erythropoiesis,The_gene_is_currently_being_used_as_a_biomarker_in_clinical_settings,The_gene_has_potential_value_as_a_blood_transcriptional_biomarker,The_gene_is_relevant_to_circulating_leukocytes_immune_biology,The_gene_is_a_known_drug_target,The_gene_is_therapeutically_relevant_for_immune-mediated_diseases
+0,EPSTI1,text-davinci-003_1, Epsin-1, Epsin-1 is a ubiquitously expressed endocytic adaptor protein that is involved in clathrin-mediated endocytosis., 5, 0, 5, 5, 0, 0
+1,IFI6,text-davinci-003_1," Interferon, alpha-inducible protein 6", IFI6 is a gene that encodes a protein that is involved in the regulation of interferon-mediated antiviral responses., 5, 0, 5, 5, 0, 5
+2,ISG15,text-davinci-003_1, ISG15 (Interferon-stimulated Gene 15), ISG15 is a ubiquitin-like protein that is induced by interferon and is involved in antiviral and anti-tumor responses., 5, 0, 5, 5, 0, 5
