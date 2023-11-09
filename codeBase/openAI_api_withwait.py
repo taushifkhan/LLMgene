@@ -18,7 +18,7 @@ def createPrompt(gname,params):
 
 def callGPT(modelID="text-davinci-003",temperature=0,promptID=''):
     response = openai.Completion.create(
-              model=modelID,
+              engine=modelID,
               prompt=promptID,
               temperature=0,
               max_tokens=1000,

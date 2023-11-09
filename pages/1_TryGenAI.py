@@ -14,11 +14,10 @@ Read more about prompt desiging [here](https://developers.generativeai.google/gu
 Encoded API will generate a response and will use deigned prompt for further query on multiple gene in the next page.
 """)
 
+# get prompt authentication
 
-openAi_models_select = 'text-davinci-003'
+openAi_models_select = 'datasvc-openai-dev-gpt35-turbo-instruct'
 st.info("prompt will use selected model : {}".format(openAi_models_select))
-
-
 
 prompt_col, response_col = st.columns(2)
 param_definition = {}
