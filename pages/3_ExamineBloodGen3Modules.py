@@ -55,7 +55,7 @@ with st.form("run_bloodgen3"):
         last_run = 0
         for i in range(1, len(gen_to_run)+1):
             status_text.text("Runnning for {} [{}/{}]| last run {}sec".format(gen_to_run[i-1], i, gene_to_run_count, last_run))
-            dxv = oX.run_for_gene(gen_to_run[i-1],param_json_x, model_to_use='text-davinci-003', backofftimer = 40,iteration=1)
+            dxv = oX.run_for_gene(gen_to_run[i-1],param_json_x, backofftimer = 40,iteration=1)
             json_response[gen_to_run[i-1]] = dxv
             last_run = round(time.time()-time_start,2)
             progress_bar.progress(int(i/(len(gen_to_run)+1)*100))

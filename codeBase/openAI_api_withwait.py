@@ -6,6 +6,7 @@ import numpy as np
 import time
 from tqdm import tqdm
 import json
+openAi_models_select = 'datasvc-openai-dev-gpt35-turbo-instruct'
 
 def createPrompt(gname,params):
     #copy prompt here"
@@ -32,7 +33,7 @@ def callGPT(modelID="text-davinci-003",temperature=0,promptID=''):
     else:
         return 0
 
-def run_for_gene(gname, param_dict, model_to_use="", backofftimer = 40,iteration=1,temperature=0):
+def run_for_gene(gname, param_dict, model_to_use=openAi_models_select, backofftimer = 40,iteration=1,temperature=0):
     print (gname)
     mID = model_to_use 
     pd_tmp = {}
@@ -70,16 +71,21 @@ def convertJson_DF(drespo):
 def convertJson_DF_singleGene(drespo):
     conver_dict = []
 
-    for model in drespo.keys():
-        tmp = {}
-        tmp = {'model':model}
-        for m in drespo[model]:
-            if m:
-                tmp.update({m.split(":")[0].strip().replace(" ","_") : m.split(":")[1]})
-        conver_dict.append(tmp)
+    try:
 
-    pd_csv = pd.DataFrame.from_dict(conver_dict)
-    return pd_csv
+        for model in drespo.keys():
+            tmp = {}
+            tmp = {'model':model}
+            for m in drespo[model]:
+                if m:
+                    tmp.update({m.split(":")[0].strip().replace(" ","_") : m.split(":")[1]})
+            conver_dict.append(tmp)
+
+        pd_csv = pd.DataFrame.from_dict(conver_dict)
+        return pd_csv
+    except:
+        print ("erroe in parsing output")
+        return 0
 
 # dfAll = {}
 # geneList = pd.read_csv("./geneList/M9.2_genes.csv")
