@@ -70,9 +70,7 @@ def convertJson_DF(drespo):
 
 def convertJson_DF_singleGene(drespo):
     conver_dict = []
-
     try:
-
         for model in drespo.keys():
             tmp = {}
             tmp = {'model':model}

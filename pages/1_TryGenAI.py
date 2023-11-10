@@ -75,8 +75,8 @@ with st.form("try_genAI_form"):
             with st.expander("see result in Json"):
                 st.info(dxv)
 
-            outCSV_response, status = oX.convertJson_DF_singleGene(dxv)
-            if status !=0: 
+            outCSV_response, format_status = oX.convertJson_DF_singleGene(dxv)
+            if format_status !=0: 
                 with st.expander("see result in CSV"):
                     st.write(outCSV_response.T)
             
