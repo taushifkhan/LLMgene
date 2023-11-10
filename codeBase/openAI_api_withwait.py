@@ -82,10 +82,10 @@ def convertJson_DF_singleGene(drespo):
             conver_dict.append(tmp)
 
         pd_csv = pd.DataFrame.from_dict(conver_dict)
-        return pd_csv
+        return pd_csv, 0
     except:
-        print ("erroe in parsing output")
-        return 0
+        print ("error in parsing output")
+        return 0, 0
 
 # dfAll = {}
 # geneList = pd.read_csv("./geneList/M9.2_genes.csv")

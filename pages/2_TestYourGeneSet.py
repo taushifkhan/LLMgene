@@ -58,7 +58,7 @@ if (uploaded_gene_file is not None) & (uploaded_param_file is not None):
         last_run = 0
         for i in range(1, len(gen_to_run)+1):
             status_text.text("Runnning {}[{}/{}]|last run {}sec".format(gen_to_run[i-1], i, gene_to_run_count, last_run))
-            dxv = oX.run_for_gene(gList[i-1],param_json, backofftimer = 40,iteration=1) # have to include model variable
+            dxv = oX.run_for_gene(gList[i-1],param_json, backofftimer = 40,iteration=1) # have to include model variableqaz3q1  
             json_response[gList[i-1]] = dxv
             progress_bar.progress(int(i/(len(gen_to_run)+1)*100))
             last_run = round(time.time()-time_start, 2)
