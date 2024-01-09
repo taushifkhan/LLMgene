@@ -31,31 +31,32 @@ if api_flavours == "general":
     
     
 elif api_flavours == "azure":
+    st.warning("developing...")
 
-    st.markdown("""
-    ## this uses open AI from azure ## for internal use only
-    """)
+    # st.markdown("""
+    # ## this uses open AI from azure ## for internal use only
+    # """)
 
-    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+    # openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
 
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
-        st.stop()
-    st.write(openai.Models.list())
+    # if not openai_api_key:
+    #     st.info("Please add your OpenAI API key to continue.")
+    #     st.stop()
+    # st.write(openai.Models.list())
 
-    openai.api_key = openai_api_key
-    openai.api_type = 'azure'
-    openai.api_base =  'https://datasvc-openai-dev.openai.azure.com/'
-    openai.api_version = '2023-05-15'
+    # openai.api_key = openai_api_key
+    # openai.api_type = 'azure'
+    # openai.api_base =  'https://datasvc-openai-dev.openai.azure.com/'
+    # openai.api_version = '2023-05-15'
 
-    openAi_models = []
-    for k in openai.Model.list()["data"]:
-        capbility =k["capabilities"]
-        openAi_models.append([k["id"],k["status"],k["object"],capbility["completion"],capbility["chat_completion"]])
-    openAi_models = pd.DataFrame(openAi_models,columns=["modelName","status","kind","completion","chat_completion"])
+    # openAi_models = []
+    # for k in openai.Model.list()["data"]:
+    #     capbility =k["capabilities"]
+    #     openAi_models.append([k["id"],k["status"],k["object"],capbility["completion"],capbility["chat_completion"]])
+    # openAi_models = pd.DataFrame(openAi_models,columns=["modelName","status","kind","completion","chat_completion"])
 
 
-    st.header("Models with give api")
-    st.write(openAi_models[openAi_models.completion==True])
-    st.info("(Read more about Models available in openAI)[https://platform.openai.com/docs/models]")
+    # st.header("Models with give api")
+    # st.write(openAi_models[openAi_models.completion==True])
+    # st.info("(Read more about Models available in openAI)[https://platform.openai.com/docs/models]")
     # openAi_models_select = st.selectbox("choose model ,use 'text-davinci-003':", list(openAi_models.modelName.values))
