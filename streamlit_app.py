@@ -1,6 +1,7 @@
 import openai 
 import streamlit as st
 import pandas as pd
+from codeBase import openAI_api_withwait as oX
 
 st.set_page_config(page_title="GenAI for Genes",page_icon=":cyclone:")
 st.markdown("""## Use of Generative AI for gene prioritisation
@@ -20,12 +21,7 @@ if api_flavours == "general":
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
     openai.api_key = openai_api_key
-    
-    openAi_models = []
-    for k in openai.Model.list()["data"]:
-        # capbility =k["capabilities"]
-        openAi_models.append([k["id"],k["object"],k["owned_by"]])
-    openAi_models = pd.DataFrame(openAi_models,columns=["modelName","object","ownedby"])
+    openAi_models  = oX.getModels()
     openAi_models_sel = openAi_models[openAi_models.modelName.str.contains("gpt")]
     st.header("Models with give api")
     st.write(openAi_models_sel)
