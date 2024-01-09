@@ -76,8 +76,15 @@ with st.form("try_genAI_form"):
                                    temperature=param_definition["model_setting"]["temperature"])
             
             status_text.text("Completed for {} [{} iterations] ..".format(geneName, param_definition["model_setting"]["q_iter"]))
-            with st.expander("see result in Json"):
-                st.info(dxv)
+            # with st.expander("see result in Json"):
+            st.info(dxv)
+
+            st.download_button(
+                label="Download result",
+                file_name="data.json",
+                mime="application/json",
+                data=dxv,
+            )
 
             outCSV_response, format_status = oX.convertJson_DF_singleGene(dxv)
             if format_status !=0: 
