@@ -17,7 +17,7 @@ Encoded API will generate a response and will use deigned prompt for further que
 # get prompt authentication
 openAi_models  = oX.getModels()
 
-if not openAi_models.shape[0]:
+if not (openAi_models.shape[0] and openai.api_key):
     st.warning("To proceed further stater api session")
 else:
     openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models[openAi_models.modelName.str.contains("gpt")].modelName.values))
