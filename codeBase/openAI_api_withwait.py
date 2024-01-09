@@ -6,32 +6,59 @@ import numpy as np
 import time
 from tqdm import tqdm
 import json
-openAi_models_select = 'datasvc-openai-dev-gpt35-turbo-instruct'
+openAi_models_select = 'gpt35-turbo-instruct'
 
+## access model information
+def getModels():
+    openAi_models = []
+    for k in openai.Model.list()["data"]:
+        openAi_models.append([k["id"],k["object"],k["owned_by"]])
+    openAi_models = pd.DataFrame(openAi_models,columns=["modelName","object","ownedby"])
+    return openAi_models
+
+# create prompt
 def createPrompt(gname,params):
     #copy prompt here"
-    promptx_head = "provide following for the gene {}".format(gname)
-    prompt_body  = "{} {}".format(params['background'],params['scoring_strategy'])
-    prompt_question = params['question']
-    prompt_question_text = "\n".join(prompt_question)
+    promptx_head = "provide following for the gene {} in json format: ".format(gname)
+    prompt_body  = "{}, {}. {} in Json format with statement as key and score as value. ".format(params['background'][0],params['background'][1] ,params['scoring_strategy'])
+    prompt_question_text = "\n".join(params['question'])
     promptx = promptx_head+prompt_body+prompt_question_text
     return promptx
 
-def callGPT(modelID="text-davinci-003",temperature=0,promptID=''):
-    response = openai.Completion.create(
-              engine=modelID,
+
+
+def callGPT_completion(modelID,promptID, temperature_set):
+    response = openai.completions.create(
+              model=modelID,
               prompt=promptID,
-              temperature=0,
+              temperature=temperature_set,
               max_tokens=1000,
               top_p=1.0,
               frequency_penalty=0.0,
               presence_penalty=0.0
             )
-    
-    if response["choices"][0]["finish_reason"] == "stop":
-        return response
+
+    if response.choices[0].finish_reason == "stop":
+        return response.choices[0].text.split("\n")
     else:
         return 0
+
+def callGPT_chatCompletion(modelID, prompt_x, temperature_set):
+    response_chat = openai.ChatCompletion.create(
+                model=modelID,
+                messages=[{"role":'system',"content":prompt_x}],
+                temperature=temperature_set,
+                max_tokens=1000,
+                top_p=1.0,
+                frequency_penalty=0.0,
+                presence_penalty=0.0)
+
+    if response_chat.choices[0].finish_reason == "stop":
+        return response_chat.choices[0].message.content.split("\n")
+    else:
+        return 0
+
+
 
 def run_for_gene(gname, param_dict, model_to_use=openAi_models_select, backofftimer = 40,iteration=1,temperature=0):
     print (gname)
@@ -41,15 +68,10 @@ def run_for_gene(gname, param_dict, model_to_use=openAi_models_select, backoffti
 
     for k in np.arange(1,1+iteration):
         start = time.time()
-        res = callGPT(modelID=mID, promptID=promptx,temperature=temperature)
-        end = time.time()
-
-        timetaken = end-start
-        if timetaken < backofftimer:
-            time.sleep(backofftimer)
-
-            runID = "{}_{}".format(mID, k)
-            pd_tmp[runID] = res["choices"][0]["text"].strip().split("\n")
+        res = callGPT_chatCompletion(mID, promptx, temperature)
+        time.sleep(backofftimer)
+        runID = "{}_{}".format(model_to_use, k)
+        pd_tmp[runID] = res
             
     return pd_tmp
 

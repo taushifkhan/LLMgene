@@ -15,9 +15,13 @@ Encoded API will generate a response and will use deigned prompt for further que
 """)
 
 # get prompt authentication
+openAi_models  = oX.getModels()
 
-openAi_models_select = 'datasvc-openai-dev-gpt35-turbo-instruct'
-st.info("prompt will use selected model : {}".format(openAi_models_select))
+if not openAi_models.shape[0]:
+    st.warning("To proceed further stater api session")
+else:
+    openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models[openAi_models.modelName.str.contains("gpt")].modelName.values))
+    st.info("prompt will use selected model : {}".format(openAi_models_select))
 
 prompt_col, response_col = st.columns(2)
 param_definition = {}
