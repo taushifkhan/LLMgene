@@ -46,6 +46,7 @@ def callGPT_completion(modelID,promptID, temperature_set):
 def callGPT_chatCompletion(modelID, prompt_x, temperature_set):
     response_chat = openai.ChatCompletion.create(
                 model=modelID,
+                response_format={ "type": "json_object" },
                 messages=[{"role":'system',"content":prompt_x}],
                 temperature=temperature_set,
                 max_tokens=1000,
