@@ -46,10 +46,12 @@ with st.form("try_genAI_form"):
         st.header("Prompt designing")
 
         geneName   = st.text_area('Gene to analyze', max_chars=10)
-        background = st.text_area('Information on the gene [, separate]', max_chars=100)
-        st.write("exmaple: gene name, brief summary")
-        scoring_strategy = st.text_area("evaluatation rules:", max_chars=300)
-        st.write("example: provide score 0 to 10 on following statements with 0 being low evidence and 10 being high evidence")
+        background = "gene name, brief summary" 
+        # st.text_area('Information on the gene [, separate]', max_chars=100)
+        # st.write("exmaple: gene name, brief summary")
+        scoring_strategy = "provide score 0 to 10 on following statements with 0 being low evidence and 10 being high evidence"
+        #st.text_area("evaluatation rules:", max_chars=300)
+        #st.write("example: provide score 0 to 10 on following statements with 0 being low evidence and 10 being high evidence")
         questions  = st.text_area("questions [, separated]:", max_chars=600)
         st.write("exmaple: this is a cell receptor, this is related to immune response, this gene is related to influenza infection, this is a cell adhesive gene")
 
