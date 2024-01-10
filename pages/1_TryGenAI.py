@@ -79,12 +79,12 @@ with st.form("try_genAI_form"):
             # with st.expander("see result in Json"):
             st.info(dxv)
 
-            st.download_button(
-                label="Download result",
-                file_name="data.json",
-                mime="application/json",
-                data=dxv,
-            )
+            # st.download_button(
+            #     label="Download result",
+            #     file_name="data.json",
+            #     mime="application/json",
+            #     data=dxv,
+            # )
 
             # outCSV_response, format_status = oX.convertJson_DF_singleGene(dxv)
             # if format_status !=0: 
