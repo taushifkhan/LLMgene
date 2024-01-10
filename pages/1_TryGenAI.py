@@ -86,23 +86,23 @@ with st.form("try_genAI_form"):
                 data=dxv,
             )
 
-            outCSV_response, format_status = oX.convertJson_DF_singleGene(dxv)
-            if format_status !=0: 
-                with st.expander("see result in CSV"):
-                    st.write(outCSV_response.T)
+            # outCSV_response, format_status = oX.convertJson_DF_singleGene(dxv)
+            # if format_status !=0: 
+            #     with st.expander("see result in CSV"):
+            #         st.write(outCSV_response.T)
             
-                st.download_button(
-                    label="Download data as CSV",
-                    data=outCSV_response.to_csv().encode('utf-8'),
-                    file_name='LLM_reponse_{}_{}.csv'.format(geneName,param_definition["model_setting"]["q_iter"]),
-                    mime='text/csv',    
-                    )
+            #     st.download_button(
+            #         label="Download data as CSV",
+            #         data=outCSV_response.to_csv().encode('utf-8'),
+            #         file_name='LLM_reponse_{}_{}.csv'.format(geneName,param_definition["model_setting"]["q_iter"]),
+            #         mime='text/csv',    
+            #         )
 
-                st.info("[Read more about tunable paramteres for OpenAI API ](https://platform.openai.com/docs/api-reference/completions/create)")
-                    # st.json(param_definition)
+                # st.info("[Read more about tunable paramteres for OpenAI API ](https://platform.openai.com/docs/api-reference/completions/create)")
+                #     # st.json(param_definition)
 
-            else:
-                st.warning("error in processing output {formattign erroe: openAI did not responded in manner}")
+            # else:
+            #     st.warning("error in processing output {formattign erroe: openAI did not responded in manner}")
 
         else:
             st.warning("Define a prompt query by filling in text on left column")
