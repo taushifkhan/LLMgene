@@ -1,16 +1,25 @@
 import streamlit as st
-import time
 import numpy as np
 import pandas as pd
-import json
-from codeBase import openAI_api_withwait as oX
+import json, time, sys
+
+sys.path.append("../codeBase")
+import openAI_api_withwait as oX
+
 
 st.set_page_config(page_title="Upload your gene set", page_icon="📈")
 
 st.markdown("""
-## Use following parameters to examine your gene set
+## Use following parameters to examine your gene set.
+**Important** : For long list of genes consider using local deployment
 """)
 
+if 'api_obj' not in st.session_state:
+    st.warning("To proceed further activate sesson with key")
+    st.stop()
+
+else:
+    callAPI = st.session_state['api_obj']
 
 gene_upload, paramFile_upload = st.columns(2)
 # param_json = {}
@@ -44,9 +53,15 @@ with paramFile_upload:
 st.sidebar.header("LLM Progress")
 status_text = st.sidebar.empty()
 
+
 if (uploaded_gene_file is not None) & (uploaded_param_file is not None):
 
     if (gene_dataframe.Genes.nunique()>=1) & (all(key in param_json for key in ('background', 'scoring_strategy', 'question'))):
+
+        openAi_models_sel = callAPI.modelInfo[callAPI.modelInfo.modelName.str.contains("gpt")]
+        openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models_sel.modelName.values))
+        st.info("prompt will use selected model : {}".format(openAi_models_select))
+
         gList = gene_dataframe.Genes.values
         progress_bar = st.sidebar.progress(0)
         status_text = st.sidebar.empty()
@@ -58,7 +73,7 @@ if (uploaded_gene_file is not None) & (uploaded_param_file is not None):
         last_run = 0
         for i in range(1, len(gen_to_run)+1):
             status_text.text("Runnning {}[{}/{}]|last run {}sec".format(gen_to_run[i-1], i, gene_to_run_count, last_run))
-            dxv = oX.run_for_gene(gList[i-1],param_json, backofftimer = 40,iteration=1) # have to include model variableqaz3q1  
+            dxv = oX.run_for_gene(callAPI, gList[i-1],param_json, backofftimer = 40,iteration=1) # have to include model variableqaz3q1  
             json_response[gList[i-1]] = dxv
             progress_bar.progress(int(i/(len(gen_to_run)+1)*100))
             last_run = round(time.time()-time_start, 2)
@@ -81,14 +96,3 @@ if (uploaded_gene_file is not None) & (uploaded_param_file is not None):
                 mime="application/json",
                 data=json_string_response,
             )
-
-            st.info("out put in CSV")
-            outCSV_igene = oX.convertJson_DF(json_response)
-            with st.expander("see result in CSV"):
-                st.write(outCSV_igene)
-            st.download_button(
-                label="Download data as CSV",
-                data=outCSV_igene.to_csv().encode('utf-8'),
-                file_name='LLM_reponse_{}_genes_{}.csv'.format(gene_to_run_count,'testMyGene'),
-                mime='text/csv',    
-                )

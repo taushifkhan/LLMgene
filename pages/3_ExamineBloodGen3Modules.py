@@ -1,17 +1,24 @@
 import streamlit as st
-import time
 import numpy as np
-import json
 import pandas as pd
-from codeBase import openAI_api_withwait as oX
 from glob import glob
+import json, time, sys
+
+sys.path.append("../codeBase")
+import openAI_api_withwait as oX
 
 st.set_page_config(page_title="Try BloodGen3 Modules", page_icon=":bow_and_arrow:")
 
 st.markdown("""
 ### Use gene list from Blood Gen3 [left column] to explore themes [right] of erythropoiesis.
- 
 """)
+
+if 'api_obj' not in st.session_state:
+    st.warning("To proceed further activate sesson with key")
+    st.stop()
+
+else:
+    callAPI = st.session_state['api_obj']
 
 
 bloodGen3 = pd.read_csv("data_repo/geneList/ModuleTranscript_BioINfo.csv")
@@ -42,15 +49,10 @@ progress_bar = st.sidebar.progress(0)
 status_text = st.sidebar.empty()
 
 st.warning("current verion works best with GPT4 models")
-# get prompt authentication
-openAi_models  = oX.getModels()
 
-if not (openAi_models.shape[0] and oX.openai.api_key):
-    st.warning("To proceed further stater api session")
-else:
-    openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models[openAi_models.modelName.str.contains("gpt")].modelName.values))
-    st.info("prompt will use selected model : {}".format(openAi_models_select))
-
+openAi_models_sel = callAPI.modelInfo[callAPI.modelInfo.modelName.str.contains("gpt")]
+openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models_sel.modelName.values))
+st.info("prompt will use selected model : {}".format(openAi_models_select))
 
 with st.form("run_bloodgen3"):
     gene_to_run_count = st.slider(label="choose (n) top gene:", min_value=2,max_value=len(genes_selected))
@@ -65,7 +67,7 @@ with st.form("run_bloodgen3"):
         last_run = 0
         for i in range(1, len(gen_to_run)+1):
             status_text.text("Runnning for {} [{}/{}]| last run {}sec".format(gen_to_run[i-1], i, gene_to_run_count, last_run))
-            dxv = oX.run_for_gene(gen_to_run[i-1],param_json_x, model_to_use= openAi_models_select, backofftimer = 40,iteration=1)
+            dxv = oX.run_for_gene(callAPI, gen_to_run[i-1],param_json_x, model_to_use= openAi_models_select, backofftimer = 40,iteration=1)
             json_response[gen_to_run[i-1]] = dxv
             last_run = round(time.time()-time_start,2)
             progress_bar.progress(int(i/(len(gen_to_run)+1)*100))

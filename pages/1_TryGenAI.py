@@ -1,8 +1,10 @@
-import openai 
 import streamlit as st
 import pandas as pd
-import json
-from codeBase import openAI_api_withwait as oX
+import json, sys
+
+sys.path.append("../codeBase")
+import privateAPIcall as pA
+import openAI_api_withwait as oX
 
 st.set_page_config(page_title="GenAI for Gene Study", page_icon=":globe_with_meridians:")
 
@@ -15,30 +17,34 @@ Encoded API will generate a response and will use deigned prompt for further que
 """)
 
 # get prompt authentication
-openAi_models  = oX.getModels()
 
-if not (openAi_models.shape[0] and openai.api_key):
-    st.warning("To proceed further stater api session")
+if 'api_obj' not in st.session_state:
+    st.warning("To proceed further activate sesson with key")
+    st.stop()
+    st.switch_page("streamlit_app.py")
 else:
-    openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models[openAi_models.modelName.str.contains("gpt")].modelName.values))
+    callAPI = st.session_state['api_obj']
+    openAi_models_sel = callAPI.modelInfo[callAPI.modelInfo.modelName.str.contains("gpt")]
+    openAi_models_select = st.selectbox("Select Model [gpt engine]",list(openAi_models_sel.modelName.values))
     st.info("prompt will use selected model : {}".format(openAi_models_select))
 
 prompt_col, response_col = st.columns(2)
-param_definition = {}
-prompt_query = ''
 
+# sidebar parameters
 st.sidebar.title("Tunable parameters")
 st.sidebar.header("Temperature")
 q_temp = 0
-q_temp = st.sidebar.slider("set temperature [0: deterministic; 2: random]",min_value=0.0,max_value=2.0,step=0.1)
+q_temp = st.sidebar.slider("set temperature [0: deterministic; 2: random]",value=0.7,min_value=0.0,max_value=2.0,step=0.1)
 
 st.sidebar.header("Iteration")
 q_iter = 1
-q_iter = st.sidebar.slider("Generate each query :",min_value=1,max_value=10,step=1)
+q_iter = st.sidebar.slider("Generate each query :",value=1,min_value=1,max_value=10,step=1)
 
 st.sidebar.header("Break time [seconds]")
 b_timeout = 30
-q_timeout = st.sidebar.slider("Time out for each query:", min_value=30, max_value=120)
+q_timeout = st.sidebar.slider("Time out for each query:", value=20,min_value=30, max_value=120)
+
+param_definition= {}
 
 with st.form("try_genAI_form"):
 
@@ -55,7 +61,8 @@ with st.form("try_genAI_form"):
         questions  = st.text_area("questions [, separated]:", max_chars=600)
         st.write("exmaple: this is a cell receptor, this is related to immune response, this gene is related to influenza infection, this is a cell adhesive gene")
 
-        if geneName and background:
+
+        if geneName and questions:
             prompt_query = """provide following information on gene: {}; {}; {}; {}""".\
                         format(geneName, background,scoring_strategy.strip(),"\n".join(questions.split(",")))
             st.success(prompt_query, icon = "🤖")
@@ -73,7 +80,7 @@ with st.form("try_genAI_form"):
         status_text = st.empty()
         if submitted and prompt_query:
             status_text.text("Runnning for {} [{} iterations] ..".format(geneName, param_definition["model_setting"]["q_iter"]))
-            dxv = oX.run_for_gene(geneName, param_definition, model_to_use=openAi_models_select, \
+            dxv = oX.run_for_gene(callAPI, geneName, param_definition, model_to_use=openAi_models_select, \
                                   backofftimer = b_timeout,iteration=param_definition["model_setting"]["q_iter"],\
                                    temperature=param_definition["model_setting"]["temperature"])
             
@@ -81,31 +88,12 @@ with st.form("try_genAI_form"):
             # with st.expander("see result in Json"):
             st.info(dxv)
 
-            # st.download_button(
-            #     label="Download result",
-            #     file_name="data.json",
-            #     mime="application/json",
-            #     data=dxv,
-            # )
-
-            # outCSV_response, format_status = oX.convertJson_DF_singleGene(dxv)
-            # if format_status !=0: 
-            #     with st.expander("see result in CSV"):
-            #         st.write(outCSV_response.T)
-            
-            #     st.download_button(
-            #         label="Download data as CSV",
-            #         data=outCSV_response.to_csv().encode('utf-8'),
-            #         file_name='LLM_reponse_{}_{}.csv'.format(geneName,param_definition["model_setting"]["q_iter"]),
-            #         mime='text/csv',    
-            #         )
-
-                # st.info("[Read more about tunable paramteres for OpenAI API ](https://platform.openai.com/docs/api-reference/completions/create)")
-                #     # st.json(param_definition)
-
-            # else:
-            #     st.warning("error in processing output {formattign erroe: openAI did not responded in manner}")
-
+            st.download_button(
+                label="Download result",
+                file_name="data.json",
+                mime="application/json",
+                data=json.dumps(dxv),
+            )
         else:
             st.warning("Define a prompt query by filling in text on left column")
 
@@ -118,7 +106,7 @@ if param_definition:
 
     st.download_button(
         label="Download JSON",
-        file_name="data.json",
+        file_name="{}_data.json".format(geneName),
         mime="application/json",
         data=json_string,
     )

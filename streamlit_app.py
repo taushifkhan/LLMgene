@@ -1,7 +1,9 @@
-import openai 
 import streamlit as st
 import pandas as pd
-from codeBase import openAI_api_withwait as oX
+import sys
+sys.path.append("./codeBase")
+import privateAPIcall as pA
+import azureAPIcall as aZ
 
 st.set_page_config(page_title="GenAI for Genes",page_icon=":cyclone:")
 st.markdown("""## Use of Generative AI for gene prioritisation
@@ -20,28 +22,69 @@ if api_flavours == "general":
     if not openai_api_key:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
-    openai.api_key = openai_api_key
-    openAi_models  = oX.getModels()
-    openAi_models_sel = openAi_models[openAi_models.modelName.str.contains("gpt")]
-    st.header("Models with give api")
-    st.write(openAi_models_sel)
-    st.info("(Read more about Models available in openAI)[https://platform.openai.com/docs/models]")
-    # import ipdb; ipdb.set_trace();
-    # st.write(openai.Models.list())
+    try:
+        gA = pA.genAuth(openai_api_key)
+        assert gA.getModels(), "error in model access"
+        if gA.client_state:
+            openAi_models_sel = gA.modelInfo[gA.modelInfo.modelName.str.contains("gpt")]
+            if 'api_obj' not in st.session_state:
+                st.session_state['api_obj'] = gA
+            st.header("Models with give api")
+            st.write(openAi_models_sel)
+            st.info("(Read more about Models available in openAI)[https://platform.openai.com/docs/models]")
+        else:
+            st.warning("authentication error")
+            st.stop()
+
+    except Exception as e:
+        st.warning("Error in API access:")
+        st.write(str(e))
+        st.stop()
+
+
     
     
 elif api_flavours == "azure":
     st.warning("developing...")
+    st.markdown("""
+    ## Accessing openAI with custom deployed Auzre API
+    """)
 
-    # st.markdown("""
-    # ## this uses open AI from azure ## for internal use only
-    # """)
+    auth_repo = {
+            "azure_endpoint":"https://datasvc-openai-compsci-poc.openai.azure.com/",
+            "api_key":"920f50653c7e43e7befc7e53190a5885",
+            "model":"datasvc-openai-compsci-poc-gpt4-turbo",
+            "version":"2023-05-15"}
 
-    # openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+    endpoint = auth_repo["azure_endpoint"]#st.text_input("Azure endpoint",key="chatbot_endpoint", type="password")
+    model = auth_repo["model"]#st.text_input("OpenAI Model",key="chatbot_model", type="password")
+    api_version = auth_repo["version"]#st.text_input("deployemet version",key="chatbot_api_version", type="password")
 
-    # if not openai_api_key:
-    #     st.info("Please add your OpenAI API key to continue.")
+    if not (openai_api_key and endpoint and model and api_version):
+        st.info("Please add your Azure credentials to continue.")
+        st.stop()
+
+    auth = {"azure_endpoint":endpoint,
+            "api_key":openai_api_key,
+            "model":model,
+            "version":api_version
+            }
+    # try:
+    gA = aZ.genAuth(auth)
+    assert gA.client_state, "Error in api"
+
+    if 'api_obj' not in st.session_state:
+        st.session_state['api_obj'] = gA
+    st.write(gA.modelInfo)
+    st.success("AzureOpenAI is now linked. WIll use give model in this session.")
+
+    # except Exception as e:
+    #     st.warning("Error in API access:")
+    #     st.write(str(e))
     #     st.stop()
+
+
     # st.write(openai.Models.list())
 
     # openai.api_key = openai_api_key
@@ -49,11 +92,6 @@ elif api_flavours == "azure":
     # openai.api_base =  'https://datasvc-openai-dev.openai.azure.com/'
     # openai.api_version = '2023-05-15'
 
-    # openAi_models = []
-    # for k in openai.Model.list()["data"]:
-    #     capbility =k["capabilities"]
-    #     openAi_models.append([k["id"],k["status"],k["object"],capbility["completion"],capbility["chat_completion"]])
-    # openAi_models = pd.DataFrame(openAi_models,columns=["modelName","status","kind","completion","chat_completion"])
 
 
     # st.header("Models with give api")
