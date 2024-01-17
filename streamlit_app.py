@@ -52,7 +52,7 @@ elif api_flavours == "azure":
 
     auth_repo = {
             "azure_endpoint":"https://datasvc-openai-compsci-poc.openai.azure.com/",
-            "api_key":"920f50653c7e43e7befc7e53190a5885",
+            "api_key":"",
             "model":"datasvc-openai-compsci-poc-gpt4-turbo",
             "version":"2023-05-15"}
 
