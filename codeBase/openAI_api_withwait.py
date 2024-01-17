@@ -20,7 +20,7 @@ def getModels():
 def createPrompt(gname,params):
     #copy prompt here"
     promptx_head = "provide following for the gene {} in json format: ".format(gname)
-    prompt_body  = "{}, {}. {} in Json format with statement as key and score as value. ".format(params['background'][0],params['background'][1] ,params['scoring_strategy'])
+    prompt_body  = "{}, {}. {} in Json format with statement as key and score as value.".format(params['background'][0],params['background'][1] ,params['scoring_strategy'])
     prompt_question_text = "\n".join(params['question'])
     promptx = promptx_head+prompt_body+prompt_question_text
     return promptx

@@ -6,3 +6,4 @@
 `conda install -c conda-forge openai`
 `conda activate openAIFunc`
 `conda install -c conda-forge openai`
+
