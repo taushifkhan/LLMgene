@@ -1,9 +1,11 @@
-### Read me for genAI 
+### Repository to access openAI via api
 ###
 
+Can be performed via
+1. Personal API
+2. Azure deployed API
 
-`conda create -n openAIFunc python=3.10
-`conda install -c conda-forge openai`
-`conda activate openAIFunc`
-`conda install -c conda-forge openai`
+## web access
+* streamlit deployment : https://llmgene-jax.streamlit.app/
+* Docker :
 
